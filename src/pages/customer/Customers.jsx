@@ -184,40 +184,39 @@ const Customers = () => {
           )}
         </div>
 
-        {/* Pagination Controls (UNCHANGED) */}
+        {/* ================= PAGINATION ================= */}
         {!isLoading && totalPages > 1 && (
-          <div className="pb-4 px-4 flex justify-between items-center mt-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center px-4 py-4 border-t bg-gray-50 gap-3 mt-4">
 
             <button
               disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              className={`px-4 py-2 rounded-lg ${
-                page === 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#FF007B] text-white"
-              }`}
+              className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition ${page === 1
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-pink-600 text-white hover:bg-pink-700"
+                }`}
             >
               Previous
             </button>
 
-            <p className="text-gray-500 text-sm">
+            <span className="text-sm text-gray-500">
               Page {page} of {totalPages}
-            </p>
+            </span>
 
             <button
               disabled={page === totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-lg ${
-                page === totalPages
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#FF007B] text-white"
-              }`}
+              className={`w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium transition ${page === totalPages
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-pink-600 text-white hover:bg-pink-700"
+                }`}
             >
               Next
             </button>
 
           </div>
         )}
+
 
       </div>
     </div>
