@@ -15,140 +15,124 @@ const ProductDetail = () => {
     }
   }, [product]);
 
-  // Skeleton loader
-  const Skeleton = ({ width, height, className }) => (
+  const Skeleton = ({ width, height }) => (
     <div
-      className={`bg-gray-200 animate-pulse rounded ${className}`}
+      className="bg-gray-200 animate-pulse rounded-xl"
       style={{ width, height }}
     />
   );
 
-  if (isError)
+  if (isError) {
     return (
-      <div className="p-6 text-red-600 text-center">
-        Failed to load product details.
+      <div className="p-6 text-red-600 text-center font-medium">
+        Failed to load product details. Please try again later.
       </div>
     );
+  }
 
   return (
-    <div
-      className="min-h-screen bg-[#f8f1f4] p-6 text-[#1a1a1a]"
-      style={{ fontFamily: "'Outfit', sans-serif" }}
-    >
-      <h2 className="text-lg font-semibold mb-4">Product Details</h2>
+    <div className="min-h-screen bg-[#f8f1f4] px-4 py-5 sm:px-6 sm:py-8 text-[#1a1a1a]">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-5 sm:mb-6">
+        Product Details
+      </h2>
 
-      {/* MAIN SECTION */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start mb-6 ms-5">
-        {/* LEFT IMAGE SECTION */}
-        <div className="flex gap-4 w-full lg:w-1/2">
-          {/* Main Image */}
-          <div className="w-[70%]">
-            {isLoading ? (
-              <Skeleton width="100%" height="400px" className="rounded-xl" />
-            ) : (
-              <img
-                src={mainImage || product?.product_images?.[0]}
-                alt="Main"
-                className="rounded-xl w-full h-[400px] object-contain bg-white shadow-md"
-              />
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          <div className="flex flex-col gap-3 overflow-y-auto max-h-[400px] w-[30%] scrollbar-hide">
+      {/* MAIN SECTION ─ stacked on mobile, side-by-side on lg+ */}
+      <div className="flex flex-col lg:flex-row gap-5 sm:gap-6 lg:gap-8 mb-8 lg:mb-10">
+        {/* Images Section */}
+        <div className="w-full lg:w-3/5 xl:w-2/3 flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-5">
+          {/* Thumbnails - vertical on all sizes (good UX) */}
+          <div className="flex flex-row sm:flex-col gap-2 sm:gap-3 overflow-x-auto sm:overflow-y-auto sm:max-h-[380px] lg:max-h-[460px] w-full sm:w-20 md:w-24 lg:w-28 shrink-0">
             {isLoading
-              ? Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton
-                    key={i}
-                    width="100%"
-                    height="90px"
-                    className="rounded-xl"
-                  />
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} width="100%" height="80px" />
                 ))
               : product?.product_images?.slice(0, 5)?.map((img, i) => (
                   <img
                     key={i}
                     src={img}
-                    alt={`thumb-${i}`}
-                    className={`rounded-xl w-full h-[90px] object-cover cursor-pointer border transition-all duration-200 ${
+                    alt={`Thumbnail ${i + 1}`}
+                    className={`rounded-lg sm:rounded-xl w-20 sm:w-full h-20 sm:h-20 lg:h-24 object-cover cursor-pointer border-2 transition-all flex-shrink-0 ${
                       mainImage === img
-                        ? "border-2 border-[#FF007F] shadow-md scale-[1.02]"
-                        : "border-gray-200 hover:border-[#FF007F]"
+                        ? "border-[#FF007F] shadow-sm"
+                        : "border-gray-300 hover:border-[#FF007F]/60"
                     }`}
                     onClick={() => setMainImage(img)}
                   />
                 ))}
           </div>
+
+          {/* Main Image */}
+          <div className="flex-1 min-w-0">
+            {isLoading ? (
+              <Skeleton width="100%" height="320px sm:380px lg:460px" />
+            ) : (
+              <div className="bg-white rounded-xl shadow overflow-hidden">
+                <img
+                  src={mainImage || product?.product_images?.[0] || ""}
+                  alt={product?.product_name || "Product"}
+                  className="w-full h-[300px] sm:h-[380px] lg:h-[460px] object-contain p-2 sm:p-4"
+                />
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* RIGHT PRODUCT INFO */}
-        <div className="bg-white rounded-2xl shadow-lg shadow-pink-200 p-6 w-full lg:w-[620px] min-h-[400px] flex flex-col justify-between">
+        {/* Product Info Card */}
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 lg:p-7 w-full lg:w-2/5 xl:w-1/3 flex flex-col min-h-[340px] sm:min-h-[380px] lg:min-h-[460px]">
           {isLoading ? (
             <>
-              <Skeleton width="100px" height="14px" className="mb-2" />
-              <Skeleton width="150px" height="20px" className="mb-4" />
-              <Skeleton width="200px" height="28px" className="mb-4" />
-              <Skeleton width="100%" height="40px" className="mb-2" />
-              <Skeleton width="80%" height="20px" className="mb-1" />
-              <Skeleton width="90%" height="20px" className="mb-1" />
+              <Skeleton width="140px" height="24px" />
+              <Skeleton width="240px" height="36px" className="mt-3" />
+              <Skeleton width="180px" height="28px" className="mt-6" />
             </>
           ) : (
             <>
-              <div className="flex justify-between items-start mb-1">
-                <p className="text-sm text-gray-400">
-                  Product ID: {product?._id}
-                </p>
-                <p className="text-lg font-medium text-black">
-                  Quantity: {product?.product_Quantity}
-                </p>
+              <div className="flex flex-wrap justify-between items-start gap-3 mb-4 sm:mb-5">
+                <div>
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    Product ID: {product?._id || "—"}
+                  </p>
+                  <p className="text-base sm:text-lg font-medium mt-1">
+                    Quantity: {product?.product_Quantity ?? "—"}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className="bg-[#FF007F] hover:bg-[#e60070] text-white text-sm sm:text-base font-medium px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg shadow-md transition-colors whitespace-nowrap"
+                >
+                  + Add Product
+                </button>
               </div>
 
-              <h3 className="text-2xl font-semibold text-black mb-4">
-                {product?.product_name}
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4 line-clamp-2">
+                {product?.product_name || "Loading..."}
               </h3>
 
-              <div className="flex items-center gap-12 mb-5">
-                <div className="flex items-baseline gap-1">
-                  <p className="text-[#FF007F] text-2xl font-bold">
-                    ₹{product?.price_online}
+              <div className="flex gap-6 sm:gap-10 mb-5 sm:mb-6">
+                <div>
+                  <p className="text-[#FF007F] text-xl sm:text-2xl font-bold">
+                    ₹{product?.price_online ?? "—"}
                   </p>
-                  <span className="text-sm text-black font-medium">Online</span>
+                  <span className="text-xs sm:text-sm text-gray-600">Online</span>
                 </div>
-
-                <div className="flex items-baseline gap-1">
-                  <p className="text-[#FF007F] text-2xl font-bold">
-                    ₹{product?.price_offline}
+                <div>
+                  <p className="text-[#FF007F] text-xl sm:text-2xl font-bold">
+                    ₹{product?.price_offline ?? "—"}
                   </p>
-                  <span className="text-sm text-black font-medium">Offline</span>
+                  <span className="text-xs sm:text-sm text-gray-600">Offline</span>
                 </div>
               </div>
 
-              <div className="mb-6">
-                {/* <p className="text-sm text-black mb-1">
-                  Category -{" "}
-                  <span className="font-medium">
-                    {product?.product_catagory || "N/A"}
-                  </span>
-                </p> */}
-                <p className="text-sm text-black">
-                  Availability :{" "}
-                  <span className="font-medium">
-                    {product?.product_availability
-                      ? "In Stock"
-                      : "Out of Stock"}
-                  </span>
-                </p>
-              </div>
-
-              <div className="flex items-center justify-end mt-auto">
+              <div className="mt-auto text-right">
                 {product?.product_availability ? (
-                  <div className="flex items-center gap-2 text-green-600 font-medium">
-                    ✅ In Stock
-                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-green-600 font-semibold text-base sm:text-lg">
+                    <span className="text-xl">✅</span> In Stock
+                  </span>
                 ) : (
-                  <div className="flex items-center gap-2 text-red-600 font-medium">
-                    ❌ Out of Stock
-                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-red-600 font-semibold text-base sm:text-lg">
+                    <span className="text-xl">❌</span> Out of Stock
+                  </span>
                 )}
               </div>
             </>
@@ -156,31 +140,53 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* PRODUCT DETAILS SECTION */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ps-5">
-        {["product_Deatils", "product_Highlight", "product_description"].map(
-          (key, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl p-5 border border-[#FFD7EA] shadow-sm"
-            >
-              <h4 className="font-semibold mb-3 text-[#000]">
-                {key === "product_Deatils"
-                  ? "Product Detail"
-                  : key === "product_Highlight"
-                  ? "Highlights"
-                  : "Description"}
-              </h4>
-              {isLoading ? (
-                <Skeleton width="100%" height="60px" className="mb-2" />
-              ) : (
-                <p className="text-sm text-gray-700 leading-relaxed">
+      {/* DETAILS SECTION */}
+      <div className="mt-6 sm:mt-8">
+        {/* Mobile: Horizontal scroll cards */}
+        <div className="flex gap-4 overflow-x-auto pb-4 md:hidden snap-x snap-mandatory -mx-1 px-1">
+          {["product_Deatils", "product_Highlight", "product_description"].map(
+            (key, i) => (
+              <div
+                key={i}
+                className="min-w-[85vw] sm:min-w-[320px] flex-shrink-0 bg-white rounded-xl p-5 shadow-sm snap-center"
+              >
+                <h4 className="font-semibold text-base sm:text-lg mb-3">
+                  {key === "product_Deatils"
+                    ? "Product Details"
+                    : key === "product_Highlight"
+                    ? "Highlights"
+                    : "Description"}
+                </h4>
+                <p className="text-sm sm:text-base leading-relaxed whitespace-pre-line">
                   {product?.[key] || "No information available."}
                 </p>
-              )}
-            </div>
-          )
-        )}
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Desktop / Tablet: Grid layout */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+          {["product_Deatils", "product_Highlight", "product_description"].map(
+            (key, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl p-5 lg:p-6 shadow-sm"
+              >
+                <h4 className="font-semibold text-lg mb-3">
+                  {key === "product_Deatils"
+                    ? "Product Details"
+                    : key === "product_Highlight"
+                    ? "Highlights"
+                    : "Description"}
+                </h4>
+                <p className="text-sm lg:text-base leading-relaxed whitespace-pre-line">
+                  {product?.[key] || "No information available."}
+                </p>
+              </div>
+            )
+          )}
+        </div>
       </div>
     </div>
   );
