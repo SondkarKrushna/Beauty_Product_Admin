@@ -44,8 +44,6 @@ const CustomerDetails = () => {
                 </div>
             )}
 
-
-
             {/* ---------------- Header ---------------- */}
             <h1 className="text-[18px] sm:text-[20px] font-semibold text-black mb-3 sm:mb-4">
                 Customer Management
@@ -99,88 +97,84 @@ const CustomerDetails = () => {
                             </div>
                         </div>
 
-                        {/* Table Header */}
-                        <div className="min-w-[800px] bg-[#FFD7EA] grid grid-cols-7 py-2 px-4 text-[13px] sm:text-[14px] font-semibold text-[#000]">
-                            <div className="ml-4 text-left">Order ID</div>
-                            <div className="ml-3 text-left">Items</div>
-                            <div className="ml-3 text-left">Products</div>
-                            <div className="ml-4 text-left">Date</div>
-                            <div className="ml-3 text-left">Amount</div>
-                            <div className="ml-3 text-left">Payment</div>
-                            <div className="ml-3 text-left">Status</div>
-                            {/* <div className="ml-2 text-left">Action</div> */}
-                        </div>
+                        {/* ✅ Added Horizontal Scroll Wrapper */}
+                        <div className="w-full overflow-x-auto">
 
-                        {/* Orders List */}
-                        {orders.length > 0 ? (
-                            orders.map((order) => (
-                                <div
-                                    key={order._id}
-                                    className="min-w-[800px] grid grid-cols-7 py-2 px-4 bg-[#FFD7EA24] border-t border-[#FFD7EA] text-[#000] text-xs"
-                                >
-                                    <div className="ml-4 font-semibold">#{order._id.slice(-4)}</div>
-                                    <div className="ml-3 font-semibold">{order.products.length}</div>
-                                    <div className="ml-3 font-semibold">
-                                        {/* // inside map loop (View button pe click) */}
-                                        <button
-                                            onClick={() => {
-                                                setSelectedOrder(order);
+                            {/* Table Header */}
+                            <div className="min-w-[800px] bg-[#FFD7EA] grid grid-cols-7 py-2 px-4 text-[13px] sm:text-[14px] font-semibold text-[#000]">
+                                <div className="ml-4 text-left">Order ID</div>
+                                <div className="ml-3 text-left">Items</div>
+                                <div className="ml-3 text-left">Products</div>
+                                <div className="ml-4 text-left">Date</div>
+                                <div className="ml-3 text-left">Amount</div>
+                                <div className="ml-3 text-left">Payment</div>
+                                <div className="ml-3 text-left">Status</div>
+                            </div>
 
-                                                const orderItems = order.products.map((p) => {
-                                                    let matchedProduct = null;
-                                                    let matchedCategory = "N/A";
+                            {/* Orders List */}
+                            {orders.length > 0 ? (
+                                orders.map((order) => (
+                                    <div
+                                        key={order._id}
+                                        className="min-w-[800px] grid grid-cols-7 py-2 px-4 bg-[#FFD7EA24] border-t border-[#FFD7EA] text-[#000] text-xs"
+                                    >
+                                        <div className="ml-4 font-semibold">#{order._id.slice(-4)}</div>
+                                        <div className="ml-3 font-semibold">{order.products.length}</div>
+                                        <div className="ml-3 font-semibold">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedOrder(order);
 
-                                                    data?.products?.forEach((cat) => {
-                                                        const prod = cat.product_array.find(
-                                                            (item) => item._id === p.productId
-                                                        );
+                                                    const orderItems = order.products.map((p) => {
+                                                        let matchedProduct = null;
+                                                        let matchedCategory = "N/A";
 
-                                                        if (prod) {
-                                                            matchedProduct = prod;
-                                                            matchedCategory = cat.product_catagory;
-                                                        }
+                                                        data?.products?.forEach((cat) => {
+                                                            const prod = cat.product_array.find(
+                                                                (item) => item._id === p.productId
+                                                            );
+
+                                                            if (prod) {
+                                                                matchedProduct = prod;
+                                                                matchedCategory = cat.product_catagory;
+                                                            }
+                                                        });
+
+                                                        return {
+                                                            _id: p._id,
+                                                            quantity: p.quantity,
+                                                            price: matchedProduct?.price_online || 0,
+                                                            product: {
+                                                                name: matchedProduct?.product_name || "N/A",
+                                                                image:
+                                                                    matchedProduct?.product_images?.[0] || "/placeholder.png",
+                                                                category: matchedCategory,
+                                                            },
+                                                        };
                                                     });
 
+                                                    setSelectedOrder({
+                                                        ...order,
+                                                        items: orderItems,
+                                                    });
 
-
-                                                    return {
-                                                        _id: p._id,
-                                                        quantity: p.quantity,
-                                                        price: matchedProduct?.price_online || 0,
-                                                        product: {
-                                                            name: matchedProduct?.product_name || "N/A",
-                                                            image:
-                                                                matchedProduct?.product_images?.[0] || "/placeholder.png",
-                                                            category: matchedCategory,
-                                                        },
-                                                    };
-                                                });
-
-                                                setSelectedOrder({
-                                                    ...order,
-                                                    items: orderItems,
-                                                });
-
-                                                setShowOrderDetails(true);
-                                            }}
-
-                                            className="text-[#FF007B] underline"
-                                        >
-                                            View
-                                        </button>
+                                                    setShowOrderDetails(true);
+                                                }}
+                                                className="text-[#FF007B] underline"
+                                            >
+                                                View
+                                            </button>
+                                        </div>
+                                        <div>{new Date(order.createdAt).toLocaleDateString()}</div>
+                                        <div className="ml-3 font-semibold text-[#00A000]">₹{order.totalAmount}</div>
+                                        <div className="ml-3 font-semibold text-[#059500]">{order.order_type}</div>
+                                        <div className="ml-3 font-semibold text-[#00A000] capitalize">{order.status}</div>
                                     </div>
-                                    <div>{new Date(order.createdAt).toLocaleDateString()}</div>
-                                    <div className="ml-3 font-semibold text-[#00A000]">₹{order.totalAmount}</div>
-                                    <div className="ml-3 font-semibold text-[#059500]">{order.order_type}</div>
-                                    <div className="ml-3 font-semibold text-[#00A000] capitalize">{order.status}</div>
-                                    {/* <div className="ml-2 text-right">
-                                        <FaTrash className="text-[#FF0000] hover:text-red-600 cursor-pointer" size={16} />
-                                    </div> */}
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-center py-6 text-gray-500 italic">No orders found</p>
-                        )}
+                                ))
+                            ) : (
+                                <p className="text-center py-6 text-gray-500 italic">No orders found</p>
+                            )}
+                        </div>
                     </>
                 )}
             </div>
