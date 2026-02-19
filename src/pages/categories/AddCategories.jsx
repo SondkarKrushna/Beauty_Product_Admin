@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { FiUpload } from "react-icons/fi";
-import { useAddCategoryMutation, useEditCategoryMutation } from "../../redux/apis/categoryApi";
-
+import {
+    useAddCategoryMutation,
+    useEditCategoryMutation,
+} from "../../redux/apis/categoryApi";
 
 const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
     const [categoryName, setCategoryName] = useState("");
@@ -10,7 +12,6 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
     const [addCategory, { isLoading: adding }] = useAddCategoryMutation();
     const [editCategory, { isLoading: editing }] = useEditCategoryMutation();
 
-    // 🧠 Pre-fill data when editing
     useEffect(() => {
         if (mode === "edit" && initialData) {
             setCategoryName(initialData.product_catagory || "");
@@ -19,7 +20,6 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
 
         if (mode === "add") {
             if (!categoryName.trim()) {
@@ -38,7 +38,6 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
 
         try {
             if (mode === "edit") {
-                // ✅ Send category ID as param in new API format
                 await editCategory({
                     id: initialData._id,
                     formData,
@@ -49,7 +48,6 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
                 alert("Category added successfully!");
             }
 
-            // ✅ Reset and close modal
             onClose?.();
             setCategoryName("");
             setImage(null);
@@ -59,11 +57,20 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
         }
     };
 
-
     return (
         <form
             onSubmit={handleSubmit}
-            className="bg-white p-6 rounded-xl shadow-md w-[320px] h-[346px] flex flex-col items-center"
+            className="
+                bg-white 
+                p-4 sm:p-6 
+                rounded-xl 
+                shadow-md 
+                w-full sm:w-[320px] 
+                sm:h-[346px] 
+                h-auto 
+                flex flex-col 
+                items-center
+            "
         >
             <div className="w-full mb-3">
                 <label className="block text-sm font-semibold mb-1 text-black">
@@ -82,6 +89,7 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
                 <label className="block text-sm font-semibold mb-2 text-black">
                     Upload Image
                 </label>
+
                 <input
                     type="file"
                     accept="image/*"
@@ -89,9 +97,19 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
                     className="hidden"
                     id="upload-img"
                 />
+
                 <label
                     htmlFor="upload-img"
-                    className="w-full h-36 bg-[#F3F3F3] rounded-md flex items-center justify-center cursor-pointer"
+                    className="
+                        w-full 
+                        h-32 sm:h-36 
+                        bg-[#F3F3F3] 
+                        rounded-md 
+                        flex 
+                        items-center 
+                        justify-center 
+                        cursor-pointer
+                    "
                 >
                     {image || initialData?.product_catagory_image ? (
                         <img
@@ -106,22 +124,31 @@ const AddCategories = ({ mode = "add", initialData = {}, onClose }) => {
                     ) : (
                         <FiUpload className="text-[#FF0080] text-2xl" />
                     )}
-
                 </label>
             </div>
 
             <button
                 type="submit"
                 disabled={adding || editing}
-                className="bg-[#FF0080] text-white text-sm font-medium py-2 px-6 rounded-md disabled:opacity-50"
+                className="
+                    bg-[#FF0080] 
+                    text-white 
+                    text-sm 
+                    font-medium 
+                    py-2 
+                    px-6 
+                    rounded-md 
+                    disabled:opacity-50 
+                    w-full sm:w-auto
+                "
             >
                 {mode === "edit"
                     ? editing
                         ? "Updating..."
                         : "Update Category"
                     : adding
-                        ? "Adding..."
-                        : "Add Category"}
+                    ? "Adding..."
+                    : "Add Category"}
             </button>
         </form>
     );

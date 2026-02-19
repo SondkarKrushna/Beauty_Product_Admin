@@ -33,7 +33,7 @@ const Customers = () => {
 
   return (
     <div className="h-full w-full bg-[#FFF3F6] p-4 sm:p-8 font-Outfit">
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="font-medium text-[18px] sm:text-[20px] text-[#000]">
@@ -58,8 +58,8 @@ const Customers = () => {
       {/* Table */}
       <div className="bg-white rounded-[13px] p-4 shadow-[0_0_4px_0_rgba(255,0,123,0.3)] min-h-[500px] sm:min-h-[600px] flex flex-col">
 
-        {/* ✅ Horizontal Scroll Wrapper (Header + Rows Only) */}
-        <div className="overflow-x-auto">
+        {/* ================= DESKTOP TABLE (UNCHANGED) ================= */}
+        <div className="hidden md:block overflow-x-auto">
           <div className="min-w-[900px]">
 
             {/* Header Row */}
@@ -70,7 +70,7 @@ const Customers = () => {
               <div className="col-span-3 font-semibold text-[16px] px-8">Detail</div>
             </div>
 
-            {/* Data Rows (❌ removed flex-1) */}
+            {/* Data Rows */}
             <div className="bg-[#FFD7EA24] px-2 py-3 divide-y divide-gray-100">
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (
@@ -134,45 +134,91 @@ const Customers = () => {
           </div>
         </div>
 
-        {/* Pagination (Logic Unchanged) */}
+        {/* ================= MOBILE CARD VIEW ================= */}
+        <div className="md:hidden divide-y divide-gray-100 bg-[#FFD7EA24] rounded-lg">
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="p-4 space-y-3 animate-pulse">
+                <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+              </div>
+            ))
+          ) : filtered.length === 0 ? (
+            <div className="text-center text-sm text-gray-500 py-10">
+              No customers found
+            </div>
+          ) : (
+            filtered.map((c) => (
+              <div key={c._id} className="p-4 space-y-3">
+
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-gray-800">
+                    {c.name}
+                  </h3>
+
+                  <Link
+                    to={`/customerDetails/${c._id}`}
+                    className="text-pink-600 text-sm font-medium hover:underline"
+                  >
+                    View →
+                  </Link>
+                </div>
+
+                <div className="text-sm text-gray-500">
+                  📞 {c.phone || c.contact || "—"}
+                </div>
+
+                <div className="text-sm text-gray-600">
+                  {c.createdAt
+                    ? new Date(c.createdAt).toLocaleDateString()
+                    : "—"}
+                  <br />
+                  {c.createdAt
+                    ? new Date(c.createdAt).toLocaleTimeString()
+                    : ""}
+                </div>
+
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Pagination Controls (UNCHANGED) */}
         {!isLoading && totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-2">
-            <p className="text-sm text-gray-600 text-center sm:text-left">
-              Showing <span className="font-semibold">{customers.length}</span> of{" "}
-              <span className="font-semibold">{total}</span> customers
+          <div className="pb-4 px-4 flex justify-between items-center mt-4">
+
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+              className={`px-4 py-2 rounded-lg ${
+                page === 1
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#FF007B] text-white"
+              }`}
+            >
+              Previous
+            </button>
+
+            <p className="text-gray-500 text-sm">
+              Page {page} of {totalPages}
             </p>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                  page === 1
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-[#FF007B] text-white hover:bg-[#e0006d]"
-                }`}
-              >
-                Prev
-              </button>
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className={`px-4 py-2 rounded-lg ${
+                page === totalPages
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#FF007B] text-white"
+              }`}
+            >
+              Next
+            </button>
 
-              <span className="text-sm text-gray-700">
-                Page <strong>{page}</strong> of {totalPages}
-              </span>
-
-              <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                  page === totalPages
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-[#FF007B] text-white hover:bg-[#e0006d]"
-                }`}
-              >
-                Next
-              </button>
-            </div>
           </div>
         )}
+
       </div>
     </div>
   );

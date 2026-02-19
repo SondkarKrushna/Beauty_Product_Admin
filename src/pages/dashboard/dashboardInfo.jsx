@@ -1,16 +1,31 @@
-import React from 'react';
-import { Icon } from '@iconify/react';
-import { useGetCountQuery } from '../../redux/apis/countApi';
+import React from "react";
+import { Icon } from "@iconify/react";
+import { useGetCountQuery } from "../../redux/apis/countApi";
 import { useGetAllinvoiceQuery } from "../../redux/apis/invoiceApi";
-import SalesOverview from './SalesOverview';
-import RevenueStatistic from './RevenueStatistic';
+import { useGetAllOrdersQuery } from "../../redux/apis/orderApi";
+import SalesOverview from "./SalesOverview";
+import RevenueStatistic from "./RevenueStatistic";
 import { useNavigate } from "react-router-dom";
 
 const DashboardInfo = () => {
-  const { data, isLoading, isError } = useGetCountQuery();
-  const { data: invoiceData, isLoading: invoiceLoading } = useGetAllinvoiceQuery();
   const navigate = useNavigate();
 
+  // ================= API CALLS =================
+  const { data, isLoading, isError } = useGetCountQuery();
+  const {
+    data: invoiceData,
+    isLoading: invoiceLoading,
+  } = useGetAllinvoiceQuery();
+
+  const {
+    data: orderData,
+    isLoading: orderLoading,
+  } = useGetAllOrdersQuery({
+    page: 1,
+    limit: 1000, // large limit to calculate total revenue
+  });
+
+  // ================= SKELETON COMPONENTS =================
   const SkeletonCard = () => (
     <div className="flex items-center p-4 bg-white rounded-lg shadow animate-pulse">
       <div className="p-3 rounded-full bg-gray-300 w-12 h-12" />
@@ -27,11 +42,10 @@ const DashboardInfo = () => {
     </div>
   );
 
-  if (isLoading || invoiceLoading) {
+  // ================= LOADING STATE =================
+  if (isLoading || invoiceLoading || orderLoading) {
     return (
       <div className="p-6 mt-5 space-y-6">
-        
-        {/* Skeleton Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <SkeletonCard />
           <SkeletonCard />
@@ -39,7 +53,6 @@ const DashboardInfo = () => {
           <SkeletonCard />
         </div>
 
-        {/* Skeleton Charts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SkeletonChart />
           <SkeletonChart />
@@ -48,48 +61,65 @@ const DashboardInfo = () => {
     );
   }
 
-  // -----------------------------------------
-  //           NORMAL DASHBOARD CONTENT
-  // -----------------------------------------
   if (isError) return <p>Something went wrong!</p>;
 
+  // ================= COUNTS =================
   const userCount = data?.data?.userCount ?? 0;
-  const orderCount = data?.data?.orderCount ?? 0;
   const productCount = data?.data?.productCount ?? 0;
 
+  // ================= INVOICE REVENUE =================
+  const invoiceRevenue = invoiceData?.stats?.totalAmount ?? 0;
   const totalInvoices = invoiceData?.stats?.totalInvoices ?? 0;
-  const totalRevenue = invoiceData?.stats?.totalAmount ?? 0;
 
+  // ================= ORDER REVENUE =================
+  const orders = orderData?.data || [];
+
+  const ordersRevenue = orders.reduce(
+    (sum, order) => sum + (order.totalAmount || 0),
+    0
+  );
+
+  // ================= FINAL TOTAL REVENUE =================
+  const totalRevenue = invoiceRevenue + ordersRevenue;
+
+  // ================= CARD DATA =================
   const cardData = [
     {
-      title: 'Total Customers',
+      title: "Total Customers",
       value: userCount,
       icon: <Icon icon="mdi:users" className="w-8 h-8 text-white" />,
-      path: "/customers"
+      path: "/customers",
     },
     {
-      title: 'Invoices',
+      title: "Invoices",
       value: totalInvoices,
-      icon: <Icon icon="material-symbols-light:docs-rounded" className="w-8 h-8 text-white" />,
-      path: "/invoice"
+      icon: (
+        <Icon
+          icon="material-symbols-light:docs-rounded"
+          className="w-8 h-8 text-white"
+        />
+      ),
+      path: "/invoice",
     },
     {
-      title: 'Products',
+      title: "Products",
       value: productCount,
       icon: <Icon icon="solar:bag-bold" className="w-8 h-8 text-white" />,
-      path: "/productIn"
+      path: "/productIn",
     },
     {
-      title: 'Revenue',
+      title: "Revenue",
       value: `₹${totalRevenue.toLocaleString("en-IN")}`,
-      icon: <Icon icon="healthicons:money-bag" className="w-8 h-8 text-white" />,
-      path: "/revenue"
+      icon: (
+        <Icon icon="healthicons:money-bag" className="w-8 h-8 text-white" />
+      ),
+      path: "/revenue",
     },
   ];
 
   return (
     <div className="p-6 mt-5 space-y-6">
-      {/* Cards */}
+      {/* ================= CARDS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cardData.map((card, index) => (
           <div
@@ -108,7 +138,7 @@ const DashboardInfo = () => {
         ))}
       </div>
 
-      {/* Charts */}
+      {/* ================= CHARTS ================= */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <SalesOverview />
         <RevenueStatistic />

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
-import productimage4 from "/productimage4.jpg";
-import productimage3 from "/productimage3.jpg";
-import AddCategories from "./AddCategories"; // Import modal component
+import AddCategories from "./AddCategories";
 import { useGetCategoriesQuery } from "../../redux/apis/categoryApi";
 
 const Categories = () => {
@@ -26,10 +24,9 @@ const Categories = () => {
 
     const closeModal = () => setIsModalOpen(false);
 
-    // Skeleton same as before
     const SkeletonCard = () => (
         <div className="flex flex-col items-center animate-pulse">
-            <div className="bg-gray-200 rounded-2xl w-[180px] h-[140px]" />
+            <div className="bg-gray-200 rounded-2xl w-full max-w-[180px] h-[120px] sm:h-[140px]" />
             <div className="flex justify-center gap-4 mt-2">
                 <div className="w-5 h-5 bg-gray-200 rounded"></div>
                 <div className="w-5 h-5 bg-gray-200 rounded"></div>
@@ -39,34 +36,41 @@ const Categories = () => {
     );
 
     return (
-        <div className="p-6 bg-[#FFF7FA] min-h-screen relative">
+        <div className="p-4 sm:p-6 bg-[#FFF7FA] min-h-screen relative">
             {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="font-semibold text-lg text-[#000]">Categories</h2>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
+                <h2 className="font-semibold text-base sm:text-lg text-[#000]">
+                    Categories
+                </h2>
                 <button
                     onClick={openAddModal}
-                    className="bg-[#FF0080] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#e60073] transition"
+                    className="bg-[#FF0080] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#e60073] transition w-full sm:w-auto"
                 >
                     + Add Categories
                 </button>
             </div>
 
             {/* Cards */}
-            <div className="flex flex-wrap gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 sm:gap-8">
                 {isLoading ? (
-                    Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                    Array.from({ length: 6 }).map((_, i) => (
+                        <SkeletonCard key={i} />
+                    ))
                 ) : isError ? (
-                    <p className="text-red-600 text-sm">Failed to load categories.</p>
+                    <p className="text-red-600 text-sm">
+                        Failed to load categories.
+                    </p>
                 ) : data?.data?.length > 0 ? (
                     data.data.map((cat) => (
                         <div key={cat._id} className="flex flex-col items-center">
-                            <div className="bg-white rounded-2xl shadow-sm border border-[#FFD7EA] hover:shadow-md transition">
+                            <div className="bg-white rounded-2xl shadow-sm border border-[#FFD7EA] hover:shadow-md transition w-full max-w-[180px]">
                                 <img
                                     src={cat.product_catagory_image}
                                     alt={cat.product_catagory}
-                                    className="w-[180px] h-[140px] object-cover rounded-2xl"
+                                    className="w-full h-[120px] sm:h-[140px] object-cover rounded-2xl"
                                 />
                             </div>
+
                             <div className="flex justify-center gap-4 mt-2">
                                 <button
                                     onClick={() => openEditModal(cat)}
@@ -74,24 +78,24 @@ const Categories = () => {
                                 >
                                     <FaEdit size={18} />
                                 </button>
-                                {/* <button className="text-red-600 hover:text-red-700 transition">
-                                    <FaTrash size={18} />
-                                </button> */}
                             </div>
-                            <p className="text-sm font-medium text-black mt-1">
+
+                            <p className="text-xs sm:text-sm font-medium text-black mt-1 text-center">
                                 {cat.product_catagory}
                             </p>
                         </div>
                     ))
                 ) : (
-                    <p className="text-gray-600 text-sm">No categories found.</p>
+                    <p className="text-gray-600 text-sm">
+                        No categories found.
+                    </p>
                 )}
             </div>
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="relative">
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+                    <div className="relative w-full max-w-md">
                         <AddCategories
                             mode={mode}
                             initialData={selectedCategory}
@@ -107,8 +111,6 @@ const Categories = () => {
                 </div>
             )}
         </div>
-
-
     );
 };
 
